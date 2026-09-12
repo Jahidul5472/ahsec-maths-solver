@@ -9,7 +9,7 @@ const solutionText = document.getElementById('solutionText');
 let base64Image = '';
 
 // Paste your actual Gemini API key between the quotes below
-const GEMINI_API_KEY = "AQ.Ab8RN6JxqQtFAhb1uLBZwtBXLUbWuZR22-zyTwzp-_Z9VaUUkQ";
+const GEMINI_API_KEY = localStorage.getItem("gemini_key") || ""; if (!GEMINI_API_KEY) { const k = prompt("Please enter your Gemini API Key:"); if (k) { localStorage.setItem("gemini_key", k.trim()); location.reload(); } }
 
 function handleFileSelect(e) {
   const file = e.target.files[0];
