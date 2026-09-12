@@ -2,18 +2,18 @@ const cameraInput = document.getElementById('cameraInput');
 const galleryInput = document.getElementById('galleryInput');
 const imagePreview = document.getElementById('imagePreview');
 const solveBtn = document.getElementById('solveBtn');
-const loading = document.getElementById('loading');
 const outputCard = document.getElementById('outputCard');
 const solutionText = document.getElementById('solutionText');
+const loading = document.getElementById('loading');
 
-let base64Image = '';
+let base64Image = null;
 
-// Paste your actual Gemini API key between the quotes below
-const GEMINI_API_KEY = localStorage.getItem("gemini_key") || ""; if (!GEMINI_API_KEY) {
+let GEMINI_API_KEY = localStorage.getItem("gemini_key") || "";
+if (!GEMINI_API_KEY) {
   const k = prompt("Please enter your Gemini API Key:");
-  if (k) {
+  if (k && k.trim()) {
     localStorage.setItem("gemini_key", k.trim());
-    location.reload();
+    GEMINI_API_KEY = k.trim();
   }
 }
 
@@ -36,13 +36,19 @@ if (galleryInput) galleryInput.addEventListener('change', handleFileSelect);
 
 async function solveProblem() {
   if (!base64Image) {
-    alert("অনুগ্রহ কৰি প্ৰথমে এখন ফটো বাছক।");
+    alert("অনুগ্ৰহ কৰি প্ৰথমে এখন ফটো বাছক।");
     return;
   }
 
-  if (GEMINI_API_KEY === "PASTE_YOUR_API_KEY_HERE" || !GEMINI_API_KEY) {
-    alert("API Key সংযোগ কৰা হোৱা নাই। অনুগ্ৰহ কৰি আপোনাৰ Gemini API Key বহুৱাওক।");
-    return;
+  if (!GEMINI_API_KEY) {
+    const k = prompt("Please enter your Gemini API Key:");
+    if (k && k.trim()) {
+      localStorage.setItem("gemini_key", k.trim());
+      GEMINI_API_KEY = k.trim();
+    } else {
+      alert("API Key প্ৰয়োজন।");
+      return;
+    }
   }
 
   loading.style.display = 'block';
@@ -52,8 +58,8 @@ async function solveProblem() {
 Look at the mathematical problem in the image.
 1. Identify the chapter/topic.
 2. Provide a clear, step-by-step solution. You can explain in simple Assamese or English.
-3. CRITICAL: Enclose EVERY mathematical equation, formula, variable, and expression in LaTeX notation using $ for inline math (e.g. $y = \\sin^{-1}(x)$) and $ for standalone block math (e.g. $\frac{a}{b}$).
-4. Do not output raw backslashes without enclosing them in $ or $.`;
+3. CRITICAL: Enclose EVERY mathematical formula, variable, and expression in LaTeX notation using $ for inline math (e.g. $y = \\sin^{-1}(x)$) and $$ for standalone display math (e.g. $$\\frac{a}{b}$$).
+4. Format key headings with bold text.`;
 
   try {
     const response = await fetch(
@@ -65,12 +71,7 @@ Look at the mathematical problem in the image.
           contents: [{
             parts: [
               { text: promptText },
-              {
-                inline_data: {
-                  mime_type: "image/jpeg",
-                  data: base64Image
-                }
-              }
+              { inline_data: { mime_type: "image/jpeg", data: base64Image } }
             ]
           }]
         })
@@ -86,17 +87,22 @@ Look at the mathematical problem in the image.
       solutionText.innerHTML = rawText
         .replace(/\n/g, "<br>")
         .replace(/\*\*(.*?)\*\*/g, "<b>$1</b>");
-      
-      outputCard.style.display = "block";
 
       if (window.MathJax && window.MathJax.typesetPromise) {
         window.MathJax.typesetPromise([solutionText]).catch(err => console.error(err));
       }
+    } else {
+      solutionText.innerText = "Error parsing response: " + JSON.stringify(data);
+    }
+
+    outputCard.style.display = 'block';
   } catch (error) {
     console.error(error);
-    solutionText.innerText = "সংযোগত সমস্যা হৈছে। ইণ্টাৰনেট সংযোগ আৰু API Key পৰীক্ষা কৰক।";
+    solutionText.innerText = "সংযোগে সমস্যা হৈছে। ইণ্টাৰনেট সংযোগ আৰু API Key পৰীক্ষা কৰক।";
     outputCard.style.display = 'block';
   } finally {
     loading.style.display = 'none';
   }
 }
+
+if (solveBtn) solveBtn.addEventListener('click', solveProblem);
