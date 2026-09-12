@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">AHSEC Maths Solver</string>
+    <string name="title_activity_main">AHSEC Maths Solver</string>
+    <string name="package_name">com.ahsec.mathsolver</string>
+    <string name="custom_url_scheme">com.ahsec.mathsolver</string>
+</resources>

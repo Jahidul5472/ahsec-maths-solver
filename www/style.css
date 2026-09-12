@@ -1,0 +1,110 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: system-ui, -apple-system, sans-serif;
+  margin: 0;
+  padding: 16px;
+  background-color: #f4f6f9;
+  color: #1e293b;
+}
+
+.container {
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+header h2 {
+  font-size: 20px;
+  color: #1e3a8a;
+  margin-bottom: 6px;
+}
+
+header p {
+  font-size: 14px;
+  color: #64748b;
+  margin: 0;
+}
+
+.love-banner {
+  background: linear-gradient(135deg, #f43f5e, #e11d48);
+  color: #ffffff;
+  padding: 12px 16px;
+  border-radius: 12px;
+  text-align: center;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 12px rgba(244, 63, 94, 0.25);
+}
+
+.love-banner h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.action-card {
+  background: #ffffff;
+  padding: 18px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  text-align: center;
+}
+
+.btn {
+  background: #2563eb;
+  color: #ffffff;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+}
+
+.btn.solve {
+  background: #059669;
+  margin-top: 14px;
+}
+
+#previewContainer {
+  margin-top: 14px;
+}
+
+#imagePreview {
+  max-width: 100%;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.output-card {
+  background: #ffffff;
+  padding: 18px;
+  border-radius: 12px;
+  margin-top: 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  line-height: 1.7;
+  white-space: pre-wrap;
+  font-size: 15px;
+}
+
+.output-card h3 {
+  margin-top: 0;
+  color: #0f172a;
+  border-bottom: 2px solid #e2e8f0;
+  padding-bottom: 8px;
+}
+
+#loading {
+  text-align: center;
+  margin-top: 20px;
+  font-weight: 600;
+  color: #d97706;
+}

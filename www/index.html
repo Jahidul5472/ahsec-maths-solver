@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="as">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AHSEC গণিত সমাধানকাৰী</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h2>উচ্চতৰ মাধ্যমিক ২য় বৰ্ষ গণিত সমাধান</h2>
+      <p>প্ৰশ্নৰ ফটো দিয়ক আৰু অসমীয়াত সহজ সমাধান চাওক</p>
+    </header>
+
+    <div class="love-banner">
+      <h3>Hey Shabnur " I Love You 💕😘" . Solve Now</h3>
+    </div>
+
+    <div class="action-card">
+      <!-- Camera input -->
+      <input type="file" id="cameraInput" accept="image/*" capture="environment" hidden>
+      <button class="btn" onclick="document.getElementById('cameraInput').click()" style="margin-bottom: 10px;">
+        📷 কেমেৰাৰে ফটো তোলক (Camera)
+      </button>
+
+      <!-- Gallery input -->
+      <input type="file" id="galleryInput" accept="image/*" hidden>
+      <button class="btn" onclick="document.getElementById('galleryInput').click()" style="background: #475569;">
+        🖼️ গেলাৰীৰ পৰা বাছক (Gallery)
+      </button>
+
+      <div id="previewContainer">
+        <img id="imagePreview" alt="প্ৰশ্নৰ ছবি" style="display:none;" />
+      </div>
+
+      <button id="solveBtn" class="btn solve" style="display:none;" onclick="solveProblem()">
+        সমাধান উলিয়াওক
+      </button>
+    </div>
+
+    <div id="loading" style="display:none;">
+      <p>গণিত সমাধান কৰা হৈ আছে, অনুগ্ৰহ কৰি অপেক্ষা কৰক...</p>
+    </div>
+
+    <div id="outputCard" class="output-card" style="display:none;">
+      <h3>সমাধান (Solution):</h3>
+      <div id="solutionText"></div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
