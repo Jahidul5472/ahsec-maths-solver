@@ -48,14 +48,12 @@ async function solveProblem() {
   loading.style.display = 'block';
   outputCard.style.display = 'none';
 
-  const promptText = `
-  You are an expert tutor for AHSEC Higher Secondary (H.S.) 2nd Year Mathematics in Assam.
-  Look at the mathematical problem in the image.
-  1. Identify the chapter/topic (e.g., Relations and Functions, Inverse Trigonometric Functions, Matrices, Determinants, Continuity and Differentiability, Application of Derivatives, Integrals, Application of Integrals, Differential Equations, Vector Algebra, Three Dimensional Geometry, Linear Programming, Probability).
-  2. Provide a clear, step-by-step solution strictly in simple Assamese (অসমীয়া ভাষাত).
-  3. Keep mathematical formulas, equations, and steps clear and properly structured.
-  4. Explain each step simply so an AHSEC board student can easily understand and write it in the final examination.
-  `;
+  const promptText = `You are an expert tutor for AHSEC Higher Secondary (H.S.) 2nd Year Mathematics in Assam.
+Look at the mathematical problem in the image.
+1. Identify the chapter/topic.
+2. Provide a clear, step-by-step solution. You can explain in simple Assamese or English.
+3. CRITICAL: Enclose EVERY mathematical equation, formula, variable, and expression in LaTeX notation using $ for inline math (e.g. $y = \\sin^{-1}(x)$) and $ for standalone block math (e.g. $\frac{a}{b}$).
+4. Do not output raw backslashes without enclosing them in $ or $.`;
 
   try {
     const response = await fetch(
@@ -85,23 +83,15 @@ async function solveProblem() {
       solutionText.innerText = "Google API Error: " + data.error.message;
     } else if (data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
       const rawText = data.candidates[0].content.parts[0].text;
-      solutionText.innerHTML = typeof marked !== "undefined" ? marked.parse(rawText) : rawText;
-      if (window.renderMathInElement) {
-        renderMathInElement(solutionText, {
-          delimiters: [
-            {left: "$", right: "$", display: true},
-            {left: "$", right: "$", display: false},
-            {left: "\\[", right: "\\]", display: true},
-            {left: "\\(", right: "\\)", display: false}
-          ],
-          throwOnError: false
-        });
-      }
-    } else {
-      solutionText.innerText = "Response received but no solution found: " + JSON.stringify(data);
-    }
+      solutionText.innerHTML = rawText
+        .replace(/\n/g, "<br>")
+        .replace(/\*\*(.*?)\*\*/g, "<b>$1</b>");
+      
+      outputCard.style.display = "block";
 
-    outputCard.style.display = "block";
+      if (window.MathJax && window.MathJax.typesetPromise) {
+        window.MathJax.typesetPromise([solutionText]).catch(err => console.error(err));
+      }
   } catch (error) {
     console.error(error);
     solutionText.innerText = "সংযোগত সমস্যা হৈছে। ইণ্টাৰনেট সংযোগ আৰু API Key পৰীক্ষা কৰক।";
