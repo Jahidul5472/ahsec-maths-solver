@@ -84,7 +84,19 @@ async function solveProblem() {
     if (data.error) {
       solutionText.innerText = "Google API Error: " + data.error.message;
     } else if (data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
-      solutionText.innerText = data.candidates[0].content.parts[0].text;
+      const rawText = data.candidates[0].content.parts[0].text;
+      solutionText.innerHTML = typeof marked !== "undefined" ? marked.parse(rawText) : rawText;
+      if (window.renderMathInElement) {
+        renderMathInElement(solutionText, {
+          delimiters: [
+            {left: "$", right: "$", display: true},
+            {left: "$", right: "$", display: false},
+            {left: "\\[", right: "\\]", display: true},
+            {left: "\\(", right: "\\)", display: false}
+          ],
+          throwOnError: false
+        });
+      }
     } else {
       solutionText.innerText = "Response received but no solution found: " + JSON.stringify(data);
     }
