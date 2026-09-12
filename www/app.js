@@ -34,6 +34,21 @@ function handleFileSelect(e) {
 if (cameraInput) cameraInput.addEventListener('change', handleFileSelect);
 if (galleryInput) galleryInput.addEventListener('change', handleFileSelect);
 
+function wrapLatexExpressions(text) {
+  // If text already has $ or $$, keep it. Otherwise, auto-wrap standalone LaTeX lines
+  return text.split('\n').map(line => {
+    const trimmed = line.trim();
+    if (trimmed.startsWith('\\') && !trimmed.startsWith('$')) {
+      return `$$${trimmed}$$`;
+    }
+    // Wrap inline math like y = \frac{...}
+    if (line.includes('\\') && !line.includes('$')) {
+      return line.replace(/([a-zA-Z0-9_]+\s*=\s*\\[^,\n]+|\\[a-zA-Z]+(\{[^}]*\})*)/g, '$$$1$$');
+    }
+    return line;
+  }).join('\n');
+}
+
 async function solveProblem() {
   if (!base64Image) {
     alert("অনুগ্ৰহ কৰি প্ৰথমে এখন ফটো বাছক।");
@@ -54,12 +69,14 @@ async function solveProblem() {
   loading.style.display = 'block';
   outputCard.style.display = 'none';
 
-  const promptText = `You are an expert tutor for AHSEC Higher Secondary (H.S.) 2nd Year Mathematics in Assam.
-Look at the mathematical problem in the image.
-1. Identify the chapter/topic.
-2. Provide a clear, step-by-step solution. You can explain in simple Assamese or English.
-3. CRITICAL: Enclose EVERY mathematical formula, variable, and expression in LaTeX notation using $ for inline math (e.g. $y = \\sin^{-1}(x)$) and $$ for standalone display math (e.g. $$\\frac{a}{b}$$).
-4. Format key headings with bold text.`;
+  const promptText = `You are a high school mathematics teacher.
+Solve the mathematics problem presented in the image step-by-step.
+Language: Provide explanations in Assamese or simple English.
+IMPORTANT FORMATTING RULES:
+1. Every mathematical symbol, equation, variable, fraction, and formula MUST be enclosed inside LaTeX math delimiters.
+2. Use single dollar signs $...$ for inline equations (example: $y = \\sin^{-1}(\\frac{1}{\\sqrt{2}})$).
+3. Use double dollar signs $$...$$ for display equations on their own lines.
+4. NEVER write raw LaTeX commands like \\frac or \\left without enclosing them in $ or $$.`;
 
   try {
     const response = await fetch(
@@ -83,7 +100,11 @@ Look at the mathematical problem in the image.
     if (data.error) {
       solutionText.innerText = "Google API Error: " + data.error.message;
     } else if (data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
-      const rawText = data.candidates[0].content.parts[0].text;
+      let rawText = data.candidates[0].content.parts[0].text;
+      
+      // Auto-wrap any unescaped LaTeX that missed delimiters
+      rawText = wrapLatexExpressions(rawText);
+
       solutionText.innerHTML = rawText
         .replace(/\n/g, "<br>")
         .replace(/\*\*(.*?)\*\*/g, "<b>$1</b>");
