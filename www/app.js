@@ -9,7 +9,13 @@ const solutionText = document.getElementById('solutionText');
 let base64Image = '';
 
 // Paste your actual Gemini API key between the quotes below
-const GEMINI_API_KEY = localStorage.getItem("gemini_key") || ""; if (!GEMINI_API_KEY) { const k = prompt("Please enter your Gemini API Key:"); if (k) { localStorage.setItem("gemini_key", k.trim()); location.reload(); } }
+const GEMINI_API_KEY = localStorage.getItem("gemini_key") || ""; if (!GEMINI_API_KEY) {
+  const k = prompt("Please enter your Gemini API Key:");
+  if (k) {
+    localStorage.setItem("gemini_key", k.trim());
+    location.reload();
+  }
+}
 
 function handleFileSelect(e) {
   const file = e.target.files[0];
@@ -75,14 +81,15 @@ async function solveProblem() {
 
     const data = await response.json();
 
-    if (data.candidates && data.candidates[0].content) {
-      const result = data.candidates[0].content.parts[0].text;
-      solutionText.innerText = result;
+    if (data.error) {
+      solutionText.innerText = "Google API Error: " + data.error.message;
+    } else if (data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
+      solutionText.innerText = data.candidates[0].content.parts[0].text;
     } else {
-      solutionText.innerText = "সমাধান উলিয়াবলৈ অসুবিধা হৈছে। অনুগ্ৰহ কৰি ফটোখন স্পষ্টকৈ লওক।";
+      solutionText.innerText = "Response received but no solution found: " + JSON.stringify(data);
     }
 
-    outputCard.style.display = 'block';
+    outputCard.style.display = "block";
   } catch (error) {
     console.error(error);
     solutionText.innerText = "সংযোগত সমস্যা হৈছে। ইণ্টাৰনেট সংযোগ আৰু API Key পৰীক্ষা কৰক।";
